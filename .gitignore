@@ -1,0 +1,9 @@
+.molecule
+.vagrant
+.DS_Store
+*.retry
+*~
+*.swp
+venv-*
+*database*.zip
+*.log

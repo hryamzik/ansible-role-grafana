@@ -1,9 +1,5 @@
 ---
-- include: rhel_repo.yml
-  when: "{{ ansible_pkg_mgr == 'yum' }}"
-
-- include: debian_repo.yml
-  when: "{{ ansible_pkg_mgr == 'apt' }}"
+- include: "{{ ansible_os_family|lower }}_repo.yml"
 
 - name: change grafana settings if required
   ini_file: dest=/etc/grafana/grafana.ini
@@ -36,22 +32,17 @@
   when: grafana_github_auth_enabled
 
 - name: check if default signing key is presented in a config file
-  shell: grep SW2YcwTIb9zpOOhoPsMm /etc/grafana/grafana.ini
-  failed_when: no
-  changed_when: grafana_security_issue.rc == 0
+  find:
+    paths: /etc/grafana/grafana.ini
+    contains: SW2YcwTIb9zpOOhoPsMm
+  changed_when: grafana_security_issue.matched != 0
   register: grafana_security_issue
-
-- name: generate uuid
-  shell: uuidgen
-  with_sequence: count=5
-  when: grafana_security_issue|changed
-  register: uuid
 
 - name: change grafana signing key
   ini_file: dest=/etc/grafana/grafana.ini
             section=security
             option=secret_key
-            value={{ (uuid.results|random).stdout }}
+            value="{{ ansible_date_time.iso8601_micro | to_uuid }}"
             backup=yes
   when: grafana_security_issue|changed
   notify: restart grafana-server
@@ -61,3 +52,8 @@
 
 - name: check grafana
   wait_for: host="{{ '127.0.0.1' if grafana_http_addr == '0.0.0.0' else grafana_http_addr }}" port="{{ grafana_http_port }}"
+
+- name: flush handlers
+  meta: flush_handlers
+
+- include: tests.yml

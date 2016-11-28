@@ -1,5 +1,6 @@
 grafana_http_port: 3000
 grafana_http_addr: 0.0.0.0
+
 # Set to true to automatically assign new users to the default organization (id 1). Default in grafana is true but it's unsecure
 grafana_auto_assign_org: false
 

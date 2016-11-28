@@ -33,11 +33,16 @@
 
 - name: install grafana
   yum: name=grafana state={{'latest' if grafana_latest else 'present' }} update_cache="{{ test_repo_deleted.changed }}"
+  notify:
+    - restart grafana-server
 
 - name: check grafana version
   shell: yum info grafana|grep -E '^\S+.*:'
   changed_when: no
   register: dpkg
-  
+
 - name: show grafana version
   debug: msg={{ (dpkg.stdout|from_yaml).Version }}
+
+- set_fact:
+    grafana_install_version: "{{ (dpkg.stdout|from_yaml).Version|regex_replace('-(\\d+|beta)+$', '') }}"

@@ -1,0 +1,16 @@
+---
+- name: get grafana version
+  uri:
+    url: "http://{{ grafana_http_addr }}:{{ grafana_http_port }}/login"
+    return_content: yes
+  register: grafana
+
+- name: check version
+  shell: "echo '{{ grafana.content }}' | grep -o '\"version\":\"\\([0-9]\\|\\.\\)*' | grep -o [0-9].*[0-9]"
+  register: current_version
+  changed_when: false
+
+- debug: msg="current vesrion {{ current_version.stdout }}, expected version {{ grafana_install_version }}"
+
+- fail: msg="version check failed"
+  when: "{{ current_version.stdout|version_compare(grafana_install_version, '!=') }}"

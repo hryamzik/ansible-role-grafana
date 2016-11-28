@@ -1,4 +1,14 @@
 ---
+- apt: update_cache=yes
+  changed_when: false
+
+- name: install dependencies to let apt work with https
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - "apt-transport-https"
+    - "ca-certificates"
+
 - name: add pgp key
   apt_key: url=https://packagecloud.io/gpg.key
 
@@ -25,11 +35,16 @@
 
 - name: install grafana
   apt: name=grafana state={{'latest' if grafana_latest else 'present' }}
+  notify:
+    - restart grafana-server
 
 - name: check grafana version
   shell: dpkg -s grafana|sed -r 's/"/\\"/g;s/^([^:]+):\s*(.*)$/"\1"{{':'}} "\2",/;tx;d;:x'|tr -d '\n'|sed -r 's/(.*),$/{\1}/'
   changed_when: no
   register: dpkg
-  
+
 - name: show grafana version
   debug: msg={{ (dpkg.stdout|from_json).Version }}
+
+- set_fact:
+    grafana_install_version: "{{ (dpkg.stdout|from_json).Version|regex_replace('-(\\d+|beta)+$', '') }}"
