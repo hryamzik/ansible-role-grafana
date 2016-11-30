@@ -11,3 +11,7 @@
 - hosts: all
   roles:
     - { role: grafana,  grafana_beta: no }
+
+# - hosts: all
+#   roles:
+#     - { role: grafana,  grafana_beta: yes }

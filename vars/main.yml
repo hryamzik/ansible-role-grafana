@@ -1,0 +1,4 @@
+# Set to true to automatically assign new users to the default organization (id 1). Default in grafana is true but it's unsecure
+grafana_auto_assign_org: false
+grafana_root_url: "%(protocol)s://%(domain)s:%(http_port)s/"
+grafana_basic_auth_enabled: true
