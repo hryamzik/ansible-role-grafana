@@ -26,16 +26,16 @@
       - name: centos/6
         box: centos/6
 
-      - name: ubuntu/xenial64
+      - name: ubuntu/16.04
         box: ubuntu/xenial64
 
-      - name: ubuntu/trusty64
+      - name: ubuntu/14.04
         box: ubuntu/trusty64
 
-      - name: debian/jessie64
+      - name: debian/8
         box: debian/jessie64
 
-      - name: debian/wheezy64
+      - name: debian/7
         box: debian/wheezy64
 
     providers:
@@ -46,32 +46,32 @@
           cpus: 1
 
     instances:
-      - name: centos7
+      - name: grafana-centos7
         platform: centos/7
         ansible_groups:
           - vagrant
 
-      - name: centos6
+      - name: grafana-centos6
         platform: centos/6
         ansible_groups:
           - vagrant
 
-      - name: xenial64
+      - name: grafana-ubuntu16
         platform: ubuntu/xenial64
         ansible_groups:
           - vagrant
 
-      - name: trusty64
+      - name: grafana-ubuntu14
         platform: ubuntu/trusty64
         ansible_groups:
           - vagrant
 
-      - name: jessie64
+      - name: grafana-debian8
         platform: debian/jessie64
         ansible_groups:
           - vagrant
-      #
-      - name: wheezy64
+
+      - name: grafana-debian7
         platform: debian/wheezy64
         ansible_groups:
           - vagrant
