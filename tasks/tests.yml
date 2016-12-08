@@ -5,12 +5,11 @@
     return_content: yes
   register: grafana
 
-- name: check version
-  shell: "echo '{{ grafana.content }}' | grep -o '\"version\":\"\\([0-9]\\|\\.\\)*' | grep -o [0-9].*[0-9]"
-  register: current_version
-  changed_when: false
+- set_fact:
+    grafana_info: "{{ grafana|regex_replace('.*window\\.grafanaBootData\\s*=\\s*({.*});.*', '\\1')|replace('\\t','')|replace('\\n','')|regex_replace('(\\w+)(' + ':' + '\\s*(\\{|\\[))','\"\\1\"\\2') }}"
 
-- debug: msg="current vesrion {{ current_version.stdout }}, expected version {{ grafana_install_version }}"
+- name: show versions
+  debug: msg="current vesrion {{ grafana_info.settings.buildInfo.version }}, expected version {{ grafana_install_version }}"
 
 - fail: msg="version check failed"
-  when: "{{ current_version.stdout|version_compare(grafana_install_version, '!=') }}"
+  when: "{{ grafana_info.settings.buildInfo.version|version_compare(grafana_install_version, '!=') }}"
