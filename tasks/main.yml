@@ -42,7 +42,7 @@
   ini_file: dest=/etc/grafana/grafana.ini
             section=security
             option=secret_key
-            value="{{ ansible_date_time.iso8601_micro | to_uuid }}"
+            value="{{ ansible_date_time.iso8601_micro|shuffle|join('')|to_uuid}}"
             backup=yes
   when: grafana_security_issue|changed
   notify: restart grafana-server
