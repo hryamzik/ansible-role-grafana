@@ -14,7 +14,7 @@
     baseurl: "https://packagecloud.io/grafana/testing/el/{{ ansible_distribution_major_version }}/$basearch"
     gpgkey: "https://packagecloud.io/gpg.key https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana"
     gpgcheck: yes
-  when: "{{ grafana_beta }}"
+  when: grafana_beta
 
 - name: remove grafana test repo
   yum_repository:
@@ -24,7 +24,7 @@
     gpgkey: "https://packagecloud.io/gpg.key https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana"
     gpgcheck: yes
     state: absent
-  when: "{{ not grafana_beta }}"
+  when: not grafana_beta
   register: test_repo_deleted
 
 - name: remove grafana beta

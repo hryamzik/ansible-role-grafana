@@ -12,4 +12,4 @@
   debug: msg="current vesrion {{ grafana_info.settings.buildInfo.version }}, expected version {{ grafana_install_version }}"
 
 - fail: msg="version check failed"
-  when: "{{ grafana_info.settings.buildInfo.version|version_compare(grafana_install_version, '!=') }}"
+  when: grafana_info.settings.buildInfo.version|version_compare(grafana_install_version, '!=')
