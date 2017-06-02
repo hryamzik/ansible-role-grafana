@@ -31,6 +31,19 @@
   notify: restart grafana-server
   when: grafana_github_auth_enabled
 
+- name: Set up anonimous auth for grafana
+  ini_file: dest=/etc/grafana/grafana.ini
+            section={{ item.s }}
+            option={{ item.o }}
+            value={{ item.v }}
+            backup=yes
+  with_items:
+      - { s: auth.anonymous, o: enabled, v: "true" }
+      - { s: auth.anonymous, o: org_name, v: "{{ grafana_auth_anonymous_org_name }}" }
+      - { s: auth.anonymous, o: org_role, v: "{{ grafana_auth_anonymous_org_role }}" }
+  notify: restart grafana-server
+  when: grafana_auth_anonymous_enabled
+
 - name: check if default signing key is presented in a config file
   find:
     paths: /etc/grafana/grafana.ini
