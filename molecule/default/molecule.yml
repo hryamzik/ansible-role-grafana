@@ -1,0 +1,32 @@
+---
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+platforms:
+  - name: ansible-grafana-centos7
+    box: centos/7
+  - name: ansible-grafana-centos6
+    box: centos/6
+  - name: ansible-grafana-ubuntu16-04
+    box: ubuntu/xenial64
+  - name: ansible-grafana-ubuntu14-04
+    box: ubuntu/trusty64
+  - name: ansible-grafana-debian8
+    box: debian/jessie64
+  - name: ansible-grafana-debian7
+    box: debian/wheezy64
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+  connection_options:
+    ansible_become: true
+scenario:
+  name: default
+  test_sequence:
+    - destroy
+    - create
+    - converge
+    - idempotence
+    - destroy

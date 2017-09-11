@@ -7,3 +7,4 @@
 venv-*
 *database*.zip
 *.log
+molecule/default/.molecule

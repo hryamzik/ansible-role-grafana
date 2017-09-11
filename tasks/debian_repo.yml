@@ -17,11 +17,11 @@
 
 - name: add beta repo
   apt_repository: repo='deb https://packagecloud.io/grafana/testing/debian/ jessie main' state=present update_cache=yes
-  when: "{{ grafana_beta }}"
+  when: grafana_beta
 
 - name: remove beta repo
   apt_repository: repo='deb https://packagecloud.io/grafana/testing/debian/ jessie main' state=absent update_cache=yes
-  when: "{{ not grafana_beta }}"
+  when: not grafana_beta
   register: test_repo_deleted
 
 - name: remove grafana beta
