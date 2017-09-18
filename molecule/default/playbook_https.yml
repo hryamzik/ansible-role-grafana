@@ -1,0 +1,75 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: install python2
+      raw: test -e /usr/bin/python || (apt update && apt install -y python-minimal)
+      changed_when: false
+    - name: gather facts
+      setup:
+    - name: install libselinux-python binary for ansible to work
+      yum: name=libselinux-python state=present
+      when: ansible_pkg_mgr == 'yum' and not ansible_selinux
+
+- hosts: all
+  roles:
+    - role: ansible-role-grafana
+      grafana_beta: no
+      grafana_protocol: https
+      ## this is a dummy self-signed certificate for testing purpose
+      grafana_https_cert: |
+        -----BEGIN CERTIFICATE-----
+        MIIDmjCCAoICCQCaBv/+LaduOTANBgkqhkiG9w0BAQUFADCBjjESMBAGA1UEAwwJ
+        MTI3LjAuMC4xMRswGQYDVQQKDBJHdWlkZXdpcmUgU29mdHdhcmUxFjAUBgNVBAcM
+        DVNhbiBGcmFuY2lzY28xEzARBgNVBAgMCkNhbGlmb3JuaWExCzAJBgNVBAYTAlVT
+        MSEwHwYJKoZIhvcNAQkBFhJtYWlsQGd1aWRld2lyZS5jb20wHhcNMTcwOTE4MDg1
+        NjEyWhcNMTgwOTE4MDg1NjEyWjCBjjESMBAGA1UEAwwJMTI3LjAuMC4xMRswGQYD
+        VQQKDBJHdWlkZXdpcmUgU29mdHdhcmUxFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28x
+        EzARBgNVBAgMCkNhbGlmb3JuaWExCzAJBgNVBAYTAlVTMSEwHwYJKoZIhvcNAQkB
+        FhJtYWlsQGd1aWRld2lyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+        AoIBAQCxvtxjy0xV6rwp7TKrWZLwr8Dyjsa0WGWfAU00f89tBuee0jyDqSBYhl4R
+        ePzTW64rAGWa6m8AcFibrwz83ZGtdhJvB2dYz/rmw4gvrBphEvWmOYw+xz64QidI
+        iiNG0a3mhmvN97isxUej4l8cj8h5mYUaWmnqNPn28gGK7mK64Zgheezol8JOp6Pt
+        ATo10IGbwyM6t4u4gFzRb5DR5khOaPedmmBjgLt4tUBMSAWOiOuu2qAkw0sULuNS
+        6woer0DzMA3UQ19DY+ORF2EoGCHp16jEH3J1NSh0e+4ebQL10ObzmWHCZay4oYbc
+        7Rlj9HiPu2144+DV6UeR2mTKpGXtAgMBAAEwDQYJKoZIhvcNAQEFBQADggEBAFfP
+        rPh3wAR9x84alVYf1zxTd3rRnXDpt3L6uorMT+ovNphApW43eFV8mjpLhLnAa+xR
+        lS9bzceVOflEGNZdVT7PxHm2HzhoicLVkq5cOC9snbeaZ3VhHtSuCS+Y9SjNBa8b
+        0b2lck2U+gMpUj6ZpnFdEB8XXoeMR9mMKtKu2UQ2qBRsgBMESRa4P+fClLwDpnuW
+        1sq0nPuRypwWSd+xfkH81D81CCyrpLe+c8Q4IIjqWdWkFUoiRRkmZOjIgy6ZBXhF
+        PHK1Fq4/IDNHEIcwYo4xpo/HALx8qpSyq7n79YlnOwWLgS3GeT8OpOyq4MtqBCUh
+        B1UJv0CCrgXwVUYwr8g=
+        -----END CERTIFICATE-----
+      grafana_https_cert_key: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAsb7cY8tMVeq8Ke0yq1mS8K/A8o7GtFhlnwFNNH/PbQbnntI8
+        g6kgWIZeEXj801uuKwBlmupvAHBYm68M/N2RrXYSbwdnWM/65sOIL6waYRL1pjmM
+        Psc+uEInSIojRtGt5oZrzfe4rMVHo+JfHI/IeZmFGlpp6jT59vIBiu5iuuGYIXns
+        6JfCTqej7QE6NdCBm8MjOreLuIBc0W+Q0eZITmj3nZpgY4C7eLVATEgFjojrrtqg
+        JMNLFC7jUusKHq9A8zAN1ENfQ2PjkRdhKBgh6deoxB9ydTUodHvuHm0C9dDm85lh
+        wmWsuKGG3O0ZY/R4j7tteOPg1elHkdpkyqRl7QIDAQABAoIBADoGBkgFi6vYbwh4
+        yDuriA5OMXx9I1yoJrRbZmqm9n2u7VmpY9vPECIV6wtlJZORsC+Vd5W0xfussSBR
+        arn5Up7/llDsZ85URqGiXwjA8/OQjuRukNvFizH3Vn+VqKJrvIsugm7AWWb9F7/m
+        HApk3ZrkhNDvhvfPx3HX2q0R2OUMSEQxRREJgBUQiOB33UN8B7Fqlvg1R2LAGejb
+        RzOrWqOkvNh7TlHK48FLP2+1cWVBuP2YCpbjUE2sb5YFx1FrFukKF/34JwzmLZb5
+        djWIVI4kSuoCcosEbGfkGkbwafzqc5iL4NU4ll2AUdC7Z4ODT3DZdOiO90cqTzci
+        sH0Pb/kCgYEA5gvaCY8PciLByu58tF3lwy04mafe0HeFyC5AEeWnuUZ1EGe+C6HO
+        E7mE3DTJl+eIX54f0q5EgmSyaakKMwXlmL0rFGA8llQEyl12sAxAQQXBwKQ2bKC+
+        YM/ZvzkheLYeoJaRCh+htrsJ0pZF+84M9+58ut3bDC+XyaHGLmfHuO8CgYEAxcx4
+        XIN0Vy1BLDGOPg4t29/tZUiC0hWk65g8AvGrlsXodTU8k2W2g4L8+fdRnVEAVCsj
+        YguRiEXXf05YoKMoR7EjI+hhww8jbiVyiXEO+ADp1dxn50BWbkcHlLCQkpXMWsPy
+        PJRdiYGLjhFp3uu24qEXMF4nM8cP6fMGErsHNuMCgYEAlrLk3qYtBCPot7uLTczF
+        GxqgnWfu+rmRlhVWO2MqgKC7R0fuo0gX66v4cRjThwNRvvGi/yzSDGlSxwzJdatD
+        QM+LTQnOJtxbVwXrHmCoJvBSgJQSYw7aKCmBB1exqZYEckawNOWL1lyojp+KsO3G
+        aRR9+RwkxtLWqGulm/i4SVkCgYB9/Q9tXg3suVaZ37bKsB1lv+xmZxls13yE1CLl
+        fSnej5DRl2dOO6tVeUnJrk699apP8mpHOTcppdLts+mf6Ezv3VSUuqAKrsnSjue1
+        w93U+j/3iLxmAAUNmRCrFQwBUokoB0d0bsxlma5af5z/8QQ8tn8ev9oYkOMCEVn8
+        9ERUIQKBgDRL4d4lXrYUtdwNKeR5ajm245PYnZZf9sITj1alvTqVO8hUtpGhMQvy
+        3sIMKwg4ybb5CXW3TC+I0tDIzEepS2SU0B2mhmJo8GkeIBAkEfOxYHwPt3eoj+Kp
+        YwFLJaQp5Mfbz+5g4cBahL435+bOP/EZjdk2ZMKyvL8RjWmBscMQ
+        -----END RSA PRIVATE KEY-----
+      validate_certs: no
+      enable_logging: true
+
+

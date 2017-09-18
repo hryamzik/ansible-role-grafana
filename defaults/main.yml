@@ -1,6 +1,10 @@
 grafana_latest: true
 grafana_beta: no
 
+grafana_protocol: http # or https
+grafana_https_cert: ""
+grafana_https_cert_key: ""
+
 grafana_http_port: 3000
 grafana_http_addr: 0.0.0.0
 

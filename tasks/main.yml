@@ -1,4 +1,8 @@
 ---
+- fail:
+    msg: "If you would like to run Grafana using HTTPS, please define variables 'grafana_https_cert' and 'grafana_https_cert_key'"
+  when: grafana_protocol == "https" and (grafana_https_cert == "" or grafana_https_cert_key == "")
+
 - include: "{{ ansible_os_family|lower }}_repo.yml"
 
 - name: change grafana settings if required
@@ -30,6 +34,36 @@
       - { s: auth.github, o: team_ids, v: "{% for id in grafana_github_team_ids %}{{ id }}{%if not loop.last %},{% endif %}{% endfor %}" }
   notify: restart grafana-server
   when: grafana_github_auth_enabled
+
+- block:
+    - name: Create folder for SSL-certificates
+      file:
+        path: /etc/grafana/ssl
+        state: directory
+
+    - name: Put SSL cert and key files
+      copy:
+        content: "{{ item.c }}\n"
+        owner: root
+        group: grafana
+        dest: "{{ item.f }}"
+        mode: "{{ item.m|default(644) }}"
+      with_items:
+        - { c: "{{ grafana_https_cert }}",     f: /etc/grafana/ssl/grafana-ssl.crt }
+        - { c: "{{ grafana_https_cert_key }}", f: /etc/grafana/ssl/grafana-ssl.key, m: 440 }
+      no_log: "{{ not enable_logging | default('true') }}"
+      
+    - name: Set up https for grafana
+      ini_file: dest=/etc/grafana/grafana.ini
+                section={{ item.s }}
+                option={{ item.o }}
+                value={{ item.v }}
+                backup=yes
+      with_items:
+          - { s: server, o: protocol,  v: https }
+          - { s: server, o: cert_file, v: /etc/grafana/ssl/grafana-ssl.crt }
+          - { s: server, o: cert_key,  v: /etc/grafana/ssl/grafana-ssl.key }
+  when: grafana_protocol == "https"
 
 - name: Set up anonimous auth for grafana
   ini_file: dest=/etc/grafana/grafana.ini

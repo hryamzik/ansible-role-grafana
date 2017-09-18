@@ -18,6 +18,8 @@ platforms:
     box: debian/wheezy64
 provisioner:
   name: ansible
+  playbooks:
+    converge: playbook_http.yml
   lint:
     name: ansible-lint
   connection_options:

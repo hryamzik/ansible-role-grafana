@@ -1,8 +1,10 @@
 ---
 - name: get grafana version
   uri:
-    url: "http://{{ grafana_http_addr }}:{{ grafana_http_port }}/login"
+    url: "{{ grafana_protocol }}://{{ grafana_http_addr }}:{{ grafana_http_port }}/login"
     return_content: yes
+    timeout: 400
+    validate_certs: "{{ validate_certs | default('yes') }}"
   register: grafana
 
 - set_fact:
