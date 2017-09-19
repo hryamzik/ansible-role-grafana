@@ -17,4 +17,3 @@
     - role: ansible-role-grafana
       grafana_beta: no
       grafana_protocol: http
-      enable_logging: true

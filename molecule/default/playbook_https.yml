@@ -11,6 +11,9 @@
     - name: install libselinux-python binary for ansible to work
       yum: name=libselinux-python state=present
       when: ansible_pkg_mgr == 'yum' and not ansible_selinux
+    - name: install libcap2-bin for ansible to work
+      package: name=libcap2-bin state=present
+      when: ansible_pkg_mgr != 'yum'
 
 - hosts: all
   roles:
@@ -69,7 +72,7 @@
         3sIMKwg4ybb5CXW3TC+I0tDIzEepS2SU0B2mhmJo8GkeIBAkEfOxYHwPt3eoj+Kp
         YwFLJaQp5Mfbz+5g4cBahL435+bOP/EZjdk2ZMKyvL8RjWmBscMQ
         -----END RSA PRIVATE KEY-----
+      grafana_https_domain: localhost
       validate_certs: no
-      enable_logging: true
 
 

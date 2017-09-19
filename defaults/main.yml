@@ -4,8 +4,9 @@ grafana_beta: no
 grafana_protocol: http # or https
 grafana_https_cert: ""
 grafana_https_cert_key: ""
+grafana_https_domain: ""
 
-grafana_http_port: 3000
+grafana_http_port: 3000 # will be set to 443 automatically if grafana_protocol = https
 grafana_http_addr: 0.0.0.0
 
 # github auth, see http://docs.grafana.org/installation/configuration/#authgithub for details

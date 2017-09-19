@@ -1,7 +1,7 @@
 ---
 - fail:
-    msg: "If you would like to run Grafana using HTTPS, please define variables 'grafana_https_cert' and 'grafana_https_cert_key'"
-  when: grafana_protocol == "https" and (grafana_https_cert == "" or grafana_https_cert_key == "")
+    msg: "If you would like to run Grafana using HTTPS, please define variables 'grafana_https_cert', 'grafana_https_cert_key' and 'grafana_https_domain'"
+  when: grafana_protocol == "https" and (grafana_https_cert == "" or grafana_https_cert_key == "" or grafana_https_domain == "")
 
 - include: "{{ ansible_os_family|lower }}_repo.yml"
 
@@ -12,7 +12,7 @@
             value={{ item.v }}
             backup=yes
   with_items:
-      - { s: server, o: http_port, v: "{{ grafana_http_port }}" }
+      - { s: server, o: http_port, v: "{{ grafana_http_port if grafana_protocol == 'http' else '443' }}" }
       - { s: server, o: http_addr, v: "{{ grafana_http_addr }}" }
       - { s: auth.basic, o: enabled, v: "{{ 'true' if grafana_basic_auth_enabled else 'false' }}" }
   notify: restart grafana-server
@@ -51,7 +51,7 @@
       with_items:
         - { c: "{{ grafana_https_cert }}",     f: /etc/grafana/ssl/grafana-ssl.crt }
         - { c: "{{ grafana_https_cert_key }}", f: /etc/grafana/ssl/grafana-ssl.key, m: 440 }
-      no_log: "{{ not enable_logging | default('true') }}"
+      no_log: "{{ hide_sensitive_logs }}"
       
     - name: Set up https for grafana
       ini_file: dest=/etc/grafana/grafana.ini
@@ -63,6 +63,20 @@
           - { s: server, o: protocol,  v: https }
           - { s: server, o: cert_file, v: /etc/grafana/ssl/grafana-ssl.crt }
           - { s: server, o: cert_key,  v: /etc/grafana/ssl/grafana-ssl.key }
+          - { s: server, o: domain,    v: "{{ grafana_https_domain }}" }
+
+    - name: Show current capabilities
+      shell: getcap /usr/sbin/grafana-server | grep -o cap_net_bind_service+ep
+      register: caps
+      failed_when: caps.rc not in [0, 1]
+      changed_when: false
+
+    - name: Add permission to bind to 443 port
+      capabilities:
+        path: /usr/sbin/grafana-server
+        capability: cap_net_bind_service+ep
+        state: present
+      when: caps.stdout == ""
   when: grafana_protocol == "https"
 
 - name: Set up anonimous auth for grafana
@@ -98,7 +112,7 @@
   service: name=grafana-server state=started enabled=yes
 
 - name: check grafana
-  wait_for: host="{{ '127.0.0.1' if grafana_http_addr == '0.0.0.0' else grafana_http_addr }}" port="{{ grafana_http_port }}"
+  wait_for: host="{{ '127.0.0.1' if grafana_http_addr == '0.0.0.0' else grafana_http_addr }}" port="{{ grafana_http_port if grafana_protocol == 'http' else '443' }}"
 
 - name: flush handlers
   meta: flush_handlers
