@@ -19,3 +19,10 @@ grafana_github_team_ids: []
 grafana_auth_anonymous_enabled: false
 grafana_auth_anonymous_org_name: "Main Org."
 grafana_auth_anonymous_org_role: Viewer
+
+grafana_smtp_enabled: false
+grafana_smtp_server: ""
+grafana_smtp_server_port: 25
+grafana_smtp_from_address: ""
+grafana_smtp_from_name: Grafana
+grafana_smtp_skip_verify: false

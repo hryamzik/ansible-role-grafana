@@ -92,6 +92,21 @@
   notify: restart grafana-server
   when: grafana_auth_anonymous_enabled
 
+- name: Set up SMTP for grafana
+  ini_file: dest=/etc/grafana/grafana.ini
+            section={{ item.s }}
+            option={{ item.o }}
+            value={{ item.v }}
+            backup=yes
+  with_items:
+      - { s: smtp, o: enabled,      v: "true" }
+      - { s: smtp, o: host,         v: "{{ grafana_smtp_server }}:{{ grafana_smtp_server_port }}" }
+      - { s: smtp, o: from_address, v: "{{ grafana_smtp_from_address }}" }
+      - { s: smtp, o: from_name,    v: "{{ grafana_smtp_from_name }}" }
+      - { s: smtp, o: skip_verify,  v: "{{ grafana_smtp_skip_verify }}" }
+  notify: restart grafana-server
+  when: grafana_smtp_enabled
+
 - name: check if default signing key is presented in a config file
   find:
     paths: /etc/grafana/grafana.ini
