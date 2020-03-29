@@ -1,17 +1,17 @@
 ---
 - name: get grafana version
   uri:
-    url: "{{ grafana_protocol }}://{{ grafana_http_addr if grafana_protocol == 'http' else grafana_https_domain }}:{{ grafana_http_port if grafana_protocol == 'http' else '443' }}/login"
+    url: "{{ grafana_protocol }}://{{ grafana_http_addr if grafana_protocol == 'http' else grafana_https_domain }}:{{ grafana_http_port if grafana_protocol == 'http' else '443' }}/api/health"
     return_content: yes
     timeout: 400
     validate_certs: "{{ validate_certs | default('yes') }}"
   register: grafana
-
-- set_fact:
-    grafana_info: "{{ grafana|regex_replace('.*window\\.grafanaBootData\\s*=\\s*({.*});.*', '\\1')|replace('\\t','')|replace('\\n','')|regex_replace('(\\w+)(' + ':' + '\\s*(\\{|\\[))','\"\\1\"\\2') }}"
+  tags: test
 
 - name: show versions
-  debug: msg="current vesrion {{ grafana_info.settings.buildInfo.version }}, expected version {{ grafana_install_version }}"
+  debug: msg="current vesrion {{ grafana.json.version }}, expected version {{ grafana_install_version }}"
+  tags: test
 
 - fail: msg="version check failed"
-  when: grafana_info.settings.buildInfo.version|version_compare(grafana_install_version, '!=')
+  when: grafana.json.version is version(grafana_install_version, '!=')
+  tags: test

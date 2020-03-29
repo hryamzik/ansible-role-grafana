@@ -120,7 +120,7 @@
             option=secret_key
             value="{{ ansible_date_time.iso8601_micro|shuffle|join('')|to_uuid}}"
             backup=yes
-  when: grafana_security_issue|changed
+  when: grafana_security_issue is changed
   notify: restart grafana-server
 
 - name: start and autostart grafana-server

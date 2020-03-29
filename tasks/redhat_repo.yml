@@ -40,9 +40,12 @@
   shell: yum info grafana|grep -E '^\S+.*:'
   changed_when: no
   register: dpkg
+  tags: test
 
 - name: show grafana version
   debug: msg={{ (dpkg.stdout|from_yaml).Version }}
+  tags: test
 
 - set_fact:
     grafana_install_version: "{{ (dpkg.stdout|from_yaml).Version|regex_replace('-(\\d+|beta)+$', '') }}"
+  tags: test
