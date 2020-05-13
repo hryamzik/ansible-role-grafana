@@ -8,6 +8,9 @@ grafana_https_domain: ""
 
 grafana_http_port: 3000 # will be set to 443 automatically if grafana_protocol = https
 grafana_http_addr: 0.0.0.0
+grafana_domain: localhost
+grafana_root_url: "%(protocol)s://%(domain)s:%(http_port)s/"
+grafana_serve_from_sub_path: "false"
 
 # github auth, see http://docs.grafana.org/installation/configuration/#authgithub for details
 grafana_github_auth_enabled: false
@@ -19,6 +22,9 @@ grafana_github_team_ids: []
 grafana_auth_anonymous_enabled: false
 grafana_auth_anonymous_org_name: "Main Org."
 grafana_auth_anonymous_org_role: Viewer
+
+# Set to true to automatically assign new users to the default organization (id 1). Default in grafana is true but it's unsecure
+grafana_auto_assign_org: false
 
 grafana_smtp_enabled: false
 grafana_smtp_server: ""

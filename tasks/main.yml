@@ -14,6 +14,10 @@
   with_items:
       - { s: server, o: http_port, v: "{{ grafana_http_port if grafana_protocol == 'http' else '443' }}" }
       - { s: server, o: http_addr, v: "{{ grafana_http_addr }}" }
+      - { s: users,  o: auto_assign_org, v: "{{ grafana_auto_assign_org }}" }
+      - { s: server, o: domain, v: "{{ grafana_domain }}" }
+      - { s: server, o: root_url, v: "{{ grafana_root_url }}" }
+      - { s: server, o: serve_from_sub_path, v: "{{ grafana_serve_from_sub_path }}" }
       - { s: auth.basic, o: enabled, v: "{{ 'true' if grafana_basic_auth_enabled else 'false' }}" }
   notify: restart grafana-server
 
